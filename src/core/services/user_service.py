@@ -1,3 +1,6 @@
+import core.schemas.user_schema as schemas
+
+
 class UserService:
     def __init__(self, user_repository):
         self.__user_repository = user_repository
