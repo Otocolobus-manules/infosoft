@@ -7,22 +7,22 @@ class ParkingService:
 
     async def get_free_parking_spaces(
         self, time_schema: schemas.TimeDelta
-    ) -> list[schemas.ParkingSpotBase]:
+    ) -> list[int]:
         return await self.__parking_repository.get_free_parking_spaces(time_schema)
 
-    async def create_parking_spaces(self, count: int):
+    async def create_parking_spaces(self, count: int) -> list[schemas.ParkingSpotBase]:
         return await self.__parking_repository.create_parking_spaces(count)
 
     async def reservation_parking_space(
-        self, user, space: int, start_time, end_time
+        self, reserve_parking_space_schema: schemas.ReserveParkingSpace
     ) -> schemas.ReserveParkingSpace:
         return await self.__parking_repository.reservation_parking_space(
-            user, space, start_time, end_time
+            reserve_parking_space_schema
         )
 
     async def cancel_reservation_parking_space(
-        self, user, space: int
+        self, cansel_reserve_parking_space_schema: schemas.CancelReserveParkingSpace
     ) -> schemas.CancelReserveParkingSpace:
         return await self.__parking_repository.cancel_reservation_parking_space(
-            user, space
+            cansel_reserve_parking_space_schema
         )

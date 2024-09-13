@@ -2,16 +2,14 @@ from jwt.exceptions import InvalidTokenError
 from fastapi import APIRouter, Depends, Form, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
-from api import utils as auth_utils
-from api.utils import hash_password
+from core.repositories.user_repository import SQLAlchemyUserRepository
 from core.schemas.token_info import TokenInfo
 from core.schemas.user_schema import UserCreate, User
-from sqlalchemy.ext.asyncio import AsyncSession
-
-from core.services import user_service as crud
 
 
 from core.services.user_service import UserService
+from core.utils import auth_utils
+from core.utils.auth_utils import hash_password
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/")
 
@@ -19,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/")
 router = APIRouter(prefix="/auth", tags=["Авторизация"])
 
 
-user_service = UserService(None)
+user_service = UserService(SQLAlchemyUserRepository())
 
 
 async def validate_auth_user(
@@ -65,14 +63,14 @@ async def get_current_auth_user(
 
 
 @router.post("/login/", response_model=TokenInfo)
-def auth_user_issue_jwt(user: UserCreate = Depends(validate_auth_user)):
+async def auth_user_issue_jwt(user: UserCreate = Depends(validate_auth_user)):
     jwt_payload = {"sub": user.email, "username": user.username, "email": user.email}
     token = auth_utils.encode_jwt(jwt_payload)
     return TokenInfo(access_token=token, token_type="Bearer")
 
 
 @router.get("/users/me/")
-def auth_user_check_self_info(
+async def auth_user_check_self_info(
     payload: dict = Depends(get_current_token_payload),
     user: User = Depends(get_current_auth_user),
 ):

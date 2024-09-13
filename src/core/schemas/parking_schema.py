@@ -11,6 +11,13 @@ class ParkingSpotBase(BaseModel):
         from_attributes = True
 
 
+class ParkingCreate(BaseModel):
+    floor: int | None = None
+
+    class Config:
+        from_attributes = True
+
+
 class TimeDelta(BaseModel):
     start_time: datetime.datetime
     end_time: datetime.datetime
@@ -19,15 +26,30 @@ class TimeDelta(BaseModel):
         from_attributes = True
 
 
-class ReserveParkingSpace(ParkingSpotBase, TimeDelta):
-    user_id: int
+class ReserveParkingSpace(TimeDelta):
+    user_id: int | None
+    spot_id: int
 
     class Config:
         from_attributes = True
 
 
-class CancelReserveParkingSpace(ParkingSpotBase):
+class ReserveParkingSpaceReturn(ReserveParkingSpace):
+    id: int
+
+    class Config:
+        from_attributes = True
+
+
+class CancelReserveParkingSpace(BaseModel):
     user_id: int
+    spot_id: int
+
+    class Config:
+        from_attributes = True
+
+
+class CancelReserveParkingSpaceReturn(CancelReserveParkingSpace, TimeDelta):
 
     class Config:
         from_attributes = True
